@@ -4,7 +4,7 @@ are supposed to be used to ease local administration, for testing, and automated
 
 ## Prerequisites
 
-* Python 3.X
+* Python 3.9+
 * [Optional] base-repo installation
 * [Optional] MetaStore installation
 * [Optional] Typed PID Maker installation
