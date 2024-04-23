@@ -41,7 +41,7 @@ jobs:
 
       - name: Check that all static analysis tools run without errors
         run: |
-          poetry install 
+          poetry install
           poetry run poe lint --all-files
 
       - name: Scan dependencies for known vulnerabilities
