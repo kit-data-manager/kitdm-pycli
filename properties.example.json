@@ -1,0 +1,60 @@
+{
+  "keycloak": {
+    "server_url": "https://keycloak-host/",
+    "client_id": "CLIENT_ID",
+    "realm_name": "REALM_NAME",
+    "username": "LOGIN_USER",
+    "password": "LOGIN_PASSWORD"
+  },
+  "base_repo": {
+    "server_url": "https://base-repo-host:port",
+    "tableItemsResource": {
+      "Id": "id",
+      "Title": "titles.0.value",
+      "ResourceType": "resourceType.value",
+      "Created": "dates.0.value",
+      "Last Modified": "lastUpdate",
+      "State": "state"
+    },
+    "tableItemsContent": {
+      "Filename": "filename",
+      "ParentResource": "parentResource.id",
+      "Relative Path": "relativePath",
+      "MediaType": "mediaType",
+      "Size": "size",
+      "Checksum": "hash",
+      "Version": "fileVersion"
+    }
+  },
+  "metastore": {
+    "server_url": "https://metastore-host:port",
+    "tableItemsSchema": {
+      "SchemaId": "schemaId",
+      "Label": "label",
+      "Type": "type",
+      "CreatedAt": "createdAt",
+      "LastUpdate": "lastUpdate",
+      "SchemaVersion": "schemaVersion"
+    },
+    "tableItemsDocument": {
+      "Id": "id",
+      "RelatedResource": "relatedResource.identifier",
+      "Schema": "schema.identifier",
+      "CreatedAt": "createdAt",
+      "LastUpdate": "lastUpdate",
+      "Version": "recordVersion"
+    }
+  },
+  "type_pid_maker": {
+    "server_url": "https://typed-pid-maker-host:port",
+    "tableItemsRecord": {
+      "pid": "pid",
+      "entries": "entries"
+    },
+    "tableItemsPid": {
+      "PID": "pid",
+      "CreatedAt": "created",
+      "ModifiedAt": "modified"
+    }
+  }
+}

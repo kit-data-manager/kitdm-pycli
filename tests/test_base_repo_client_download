@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8090/api/v1/dataresources/ff98569f-57d0-439f-90af-009cba657b0c/data/file.txt
+  response:
+    body:
+      string: This is a test file for upload.
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '31'
+      Content-Type:
+      - text/plain
+      Date:
+      - Thu, 22 Feb 2024 11:50:08 GMT
+      Keep-Alive:
+      - timeout=60
+    status:
+      code: 200
+      message: ''
+version: 1

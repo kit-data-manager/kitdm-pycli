@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Jejkal"
+  given-names: "Thomas"
+  affiliation: Karlsruhe Institute of Technology
+  email: thomas.jejkal@kit.edu
+  orcid: "https://orcid.org/0000-0003-2804-688X"
+title: "kitdm-pycli"
+type: software
+abstract: This Python project contains a collection of command line clients for different KIT Data Manager services. The clients are supposed to be used to ease local administration, for testing, and automated operations.
+date-released: tbd
+url: "https://github.com/kit-data-manager/kitdm-pycli"
+repository-code: "https://github.com/kit-data-manager/kitdm-pycli"
+license: Apache-2.0

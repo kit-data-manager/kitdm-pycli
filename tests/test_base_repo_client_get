@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8090/api/v1/dataresources/ff98569f-57d0-439f-90af-009cba657b0c
+  response:
+    body:
+      string: '{"id":"ff98569f-57d0-439f-90af-009cba657b0c","identifier":{"id":14,"value":"(:tba)","identifierType":"DOI"},"creators":[{"id":14,"givenName":"SELF"}],"titles":[{"id":14,"value":"Test
+        Resource"}],"publisher":"Python","publicationYear":"2023","resourceType":{"id":14,"value":"testResource","typeGeneral":"DATASET"},"dates":[{"id":14,"value":"2024-02-22T11:41:26Z","type":"CREATED"}],"alternateIdentifiers":[{"id":14,"value":"ff98569f-57d0-439f-90af-009cba657b0c","identifierType":"INTERNAL"}],"lastUpdate":"2024-02-22T11:41:26.619Z","state":"VOLATILE","acls":[{"id":14,"sid":"SELF","permission":"ADMINISTRATE"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Feb 2024 11:43:07 GMT
+      ETag:
+      - '"33722580"'
+      Keep-Alive:
+      - timeout=60
+      Resource-Version:
+      - '1'
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: ''
+version: 1

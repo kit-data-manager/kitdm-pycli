@@ -1,0 +1,87 @@
+interactions:
+- request:
+    body: "--ead309071bd7768d6134c00d20d470da\r\nContent-Disposition: form-data; name=\"file\";
+      filename=\"upload.txt\"\r\n\r\nThis is a test file for upload.\r\n--ead309071bd7768d6134c00d20d470da--\r\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '177'
+      Content-Type:
+      - multipart/form-data; boundary=ead309071bd7768d6134c00d20d470da
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8090/api/v1/dataresources/ff98569f-57d0-439f-90af-009cba657b0c/data/file.txt
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Date:
+      - Thu, 22 Feb 2024 11:46:38 GMT
+      ETag:
+      - '"-1396033725"'
+      Keep-Alive:
+      - timeout=60
+      Location:
+      - http://localhost:8090/api/v1/dataresources/ff98569f-57d0-439f-90af-009cba657b0c/data/file.txt?version=1
+      Resource-Version:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 201
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.datamanager.content-information+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8090/api/v1/dataresources/ff98569f-57d0-439f-90af-009cba657b0c/data/file.txt
+  response:
+    body:
+      string: '{"id":1,"parentResource":{"id":"ff98569f-57d0-439f-90af-009cba657b0c","identifier":{"value":"(:tba)","identifierType":"DOI"},"alternateIdentifiers":[{"value":"ff98569f-57d0-439f-90af-009cba657b0c","identifierType":"INTERNAL"}]},"relativePath":"file.txt","version":1,"fileVersion":"1","versioningService":"simple","depth":1,"contentUri":"http://localhost:8090/api/v1/dataresources/ff98569f-57d0-439f-90af-009cba657b0c/data/file.txt","uploader":"SELF","mediaType":"text/plain","hash":"sha1:12b332a02235df27988593f6ec34b3b65b07a387","size":31,"metadata":{},"tags":[],"filename":"file.txt"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/vnd.datamanager.content-information+json
+      Date:
+      - Thu, 22 Feb 2024 11:46:38 GMT
+      ETag:
+      - '"-1396033725"'
+      Keep-Alive:
+      - timeout=60
+      Resource-Version:
+      - '1'
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: ''
+version: 1

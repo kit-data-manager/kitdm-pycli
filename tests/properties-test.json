@@ -1,0 +1,60 @@
+{
+  "keycloak": {
+    "server_url": "https://gateway.datamanager.kit.edu:8443/",
+    "client_id": "kitdm-services",
+    "realm_name": "dem_testing",
+    "username": "",
+    "password": ""
+  },
+  "base_repo": {
+    "server_url": "http://localhost:8090/",
+    "tableItemsResource": {
+      "Id":"id",
+      "Title": "titles.0.value",
+      "ResourceType": "resourceType.value",
+      "Created": "dates.0.value",
+      "Last Modified": "lastUpdate",
+      "State": "state"
+    },
+    "tableItemsContent": {
+      "Filename":"filename",
+      "ParentResource":"parentResource.id",
+      "Relative Path": "relativePath",
+      "MediaType": "mediaType",
+      "Size": "size",
+      "Checksum": "hash",
+      "Version": "fileVersion"
+    }
+  },
+  "metastore": {
+    "server_url": "http://localhost:8041/",
+    "tableItemsSchema": {
+      "SchemaId":"schemaId",
+      "Label": "label",
+      "Type": "type",
+      "CreatedAt": "createdAt",
+      "LastUpdate": "lastUpdate",
+      "SchemaVersion": "schemaVersion"
+    },
+    "tableItemsDocument": {
+      "Id":"id",
+      "RelatedResource":"relatedResource.identifier",
+      "Schema": "schema.identifier",
+      "CreatedAt": "createdAt",
+      "LastUpdate": "lastUpdate",
+      "Version": "recordVersion"
+}
+  },
+  "type_pid_maker": {
+    "server_url": "http://localhost:8090/",
+    "tableItemsRecord": {
+      "pid":"pid",
+      "entries": "entries"
+    },
+    "tableItemsPid": {
+      "PID":"pid",
+      "CreatedAt":"created",
+      "ModifiedAt": "modified"
+}
+  }
+}

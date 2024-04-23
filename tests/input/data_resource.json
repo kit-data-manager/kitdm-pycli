@@ -1,0 +1,13 @@
+ {
+        "titles": [
+            {
+                "value": "Test Resource"
+            }
+        ],
+        "publisher": "Python",
+        "publicationYear": "2023",
+        "resourceType": {
+            "value": "testResource",
+            "typeGeneral": "DATASET"
+        }
+    }

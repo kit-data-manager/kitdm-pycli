@@ -1,0 +1,114 @@
+[tool.poetry]
+name = "kitdm-pycli"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+authors = ["Thomas Jejkal <thomas.jejkal@kit.edu>"]
+repository = "https://github.com/kit-data-manager/kitdm-pycli"
+
+include = [
+  "*.md", "LICENSE", "LICENSES", ".reuse/dep5", "CITATION.cff", "codemeta.json",
+  "mkdocs.yml", "docs", "tests",
+  { path = "mkdocs.yml", format = "sdist" },
+  { path = "docs", format = "sdist" },
+  { path = "tests", format = "sdist" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pydantic = {extras = ["email"], version = "^2.4.2"}
+ruamel-yaml = "^0.17.21"
+tomlkit = "^0.11.6"
+importlib-metadata = "^4.11.0"
+typer = {extras = ["all"], version = "^0.7.0"}
+cffconvert = "^2.0.0"
+wrapt = "^1.15.0"
+packaging = "^23.1"
+jinja2 = "^3.1.2"
+poetry = "^1.7.1"
+python-keycloak = "^3.3.0"
+prettytable = "^3.4.1"
+flatdict = "^4.0.1"
+vcrpy = "^6.0.1"
+dateparser = "^1.2.0"
+pytest-mock = "^3.12.0"
+
+[tool.poetry.group.dev.dependencies]
+poethepoet = "^0.18.1"
+pre-commit = "^3.1.1"
+pytest = "^7.2.2"
+pytest-cov = "^4.0.0"
+hypothesis = "^6.68.2"
+licensecheck = "^2023.1.1"
+pytest-mock = "^3.10.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.4.2"
+mkdocstrings = {extras = ["python"], version = "^0.24.0"}
+mkdocs-material = "^9.4"
+mkdocs-gen-files = "^0.5.0"
+mkdocs-literate-nav = "^0.6.0"
+mkdocs-section-index = "^0.3.5"
+mkdocs-macros-plugin = "^0.7.0"
+markdown-include = "^0.8.1"
+pymdown-extensions = "^10.2"
+markdown-exec = {extras = ["ansi"], version = "^1.6.0"}
+mkdocs-coverage = "^1.0.0"
+mike = "^2.0.0"
+anybadge = "^1.14.0"
+interrogate = "^1.5.0"
+black = "^23.3.0"
+mkdocs-exclude = "^1.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+init-dev = { shell = "pre-commit install" }
+lint = "pre-commit run"  # pass --all-files to check everything
+test = "pytest -s"  # pass --cov to also collect coverage info
+docs = "mkdocs build"  # run this to generate local documentation
+licensecheck = "licensecheck"  # run this when you add new deps
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "--cov-report=term-missing:skip-covered"
+filterwarnings = [
+"ignore::DeprecationWarning:pkg_resources.*",
+"ignore::DeprecationWarning:pyshacl.*",
+# Example:
+# "ignore::DeprecationWarning:importlib_metadata.*",
+]
+
+[tool.poetry.scripts]
+metastore-client = "kitdm_pycli.clients.metastore_client:main"
+base-repo-client = "kitdm_pycli.clients.base_repo_client:main"
+typed-pid-maker-client = "kitdm_pycli.clients.typed_pid_maker_client:main"
+
+[tool.coverage.run]
+source = ["kitdm_pycli"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.semantic_release]
+version_variable = "src/kitdm-pycli/__init__.py:__version__"
+
+[tool.licensecheck]
+using = "poetry"
