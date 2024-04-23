@@ -4,13 +4,13 @@ import flatdict
 
 def render_as_table(content, table_items_callback):
     """
-           Render the provided content as table. The table structure is obtained from the caller using the provided
-           callback function.
+    Render the provided content as table. The table structure is obtained from the caller using the provided
+    callback function.
 
-           :param content: The content to render.
-           :param table_items_callback A callback returning the table structure depending on the provided content.
-           :return: The rendered output as PrettyTable object.
-           """
+    :param content: The content to render.
+    :param table_items_callback A callback returning the table structure depending on the provided content.
+    :return: The rendered output as PrettyTable object.
+    """
     if not content or len(content) == 0:
         return None
 
@@ -19,7 +19,7 @@ def render_as_table(content, table_items_callback):
     result_table.max_width = 60
 
     for elem in content:
-        flat = flatdict.FlatterDict(elem, delimiter='.')
+        flat = flatdict.FlatterDict(elem, delimiter=".")
         row = []
         for key in table_items.keys():
             row.append(flat.get(table_items.get(key)))
@@ -63,5 +63,5 @@ def render_to_file(response, args):
         # If not PrettyTable, just use the result as file
         file_content = str(response)
 
-    open(args.output, 'wb').write(bytes(file_content, "UTF-8"))
+    open(args.output, "wb").write(bytes(file_content, "UTF-8"))
     print("Output written to " + args.output)

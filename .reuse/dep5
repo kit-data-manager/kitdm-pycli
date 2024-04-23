@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kitdm-pycli
+Upstream-Contact: Thomas Jejkal <thomas.jejkal@kit.edu>
+Source: https://github.com/kit-data-manager/kitdm-pycli
+
+Files: *
+Copyright: 2023 Karlsruhe Institute of Technology
+License: Apache-2.0

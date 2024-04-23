@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 
 # kitdm-pycli properties
-# This file should be ignored as it may contain sensitive information, e.g., service URLs or passwords. 
+# This file should be ignored as it may contain sensitive information, e.g., service URLs or passwords.
 properties.json

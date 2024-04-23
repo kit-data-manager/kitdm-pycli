@@ -1,0 +1,42 @@
+{
+  "@context": [
+    "https://doi.org/10.5063/schema/codemeta-2.0",
+    "https://w3id.org/software-iodata",
+    "https://raw.githubusercontent.com/jantman/repostatus.org/master/badges/latest/ontology.jsonld",
+    "https://schema.org",
+    "https://w3id.org/software-types"
+  ],
+  "@type": "SoftwareSourceCode",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Thomas",
+      "familyName": "Jejkal",
+      "email": "thomas.jejkal@kit.edu",
+      "@id": "https://orcid.org/0000-0003-2804-688X"
+    }
+  ],
+  "name": "kitdm-pycli",
+  "description": "A CLI tool accessing KIT Data Manager RESTful services.",
+  "version": "0.1.0",
+  "keywords": [
+    "RESTful",
+    "KIT Data Manager",
+    "base-repo",
+    "metastore",
+    "typed-pid-maker"
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Thomas",
+      "familyName": "Jejkal",
+      "email": "thomas.jejkal@kit.edu",
+      "@id": "https://orcid.org/0000-0003-2804-688X"
+    }
+  ],
+  "license": [
+    "https://spdx.org/licenses/Apache-2.0"
+  ],
+  "codeRepository": "https://github.com/kit-data-manager/kitdm-pycli"
+}

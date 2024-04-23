@@ -4,14 +4,14 @@ from kitdm_pycli.helpers.service_helper import ServiceClient
 from typing import Optional
 from kitdm_pycli.helpers.render_utils import render_as_table, render_as_list
 from kitdm_pycli.helpers.file_utils import check_json_file, check_file_exists
-from kitdm_pycli.helpers.url_utils import get_query_param_entry, add_query_parameters
+from kitdm_pycli.helpers.url_utils import add_query_parameters
 
 
 def id_for_element(elem):
-    if 'parentResource' not in elem:
-        return elem['id']
+    if "parentResource" not in elem:
+        return elem["id"]
     else:
-        return elem['parentResource']['id'] + '/data/' + elem['relativePath']
+        return elem["parentResource"]["id"] + "/data/" + elem["relativePath"]
 
 
 class BaseRepoClient(ServiceClient):
@@ -21,11 +21,18 @@ class BaseRepoClient(ServiceClient):
 
     def __init__(self, debug=False):
         ServiceClient.__init__(self, debug)
-        self.server_url = self.properties['base_repo']['server_url']
-        self.tableItemsResource = self.properties['base_repo']['tableItemsResource']
-        self.tableItemsContent = self.properties['base_repo']['tableItemsContent']
+        self.server_url = self.properties["base_repo"]["server_url"]
+        self.tableItemsResource = self.properties["base_repo"]["tableItemsResource"]
+        self.tableItemsContent = self.properties["base_repo"]["tableItemsContent"]
 
-    def create(self, identifier: str, metadata: str, payload: Optional[str], path: Optional[str], auth: bool = False):
+    def create(
+        self,
+        identifier: str,
+        metadata: str,
+        payload: Optional[str],
+        path: Optional[str],
+        auth: bool = False,
+    ):
         """
         Create operation for base-repo resources and content information. Depending on the arguments, either a
         resource of a content element is created. If an identifier is provided, metadata is expected to refer to
@@ -48,33 +55,35 @@ class BaseRepoClient(ServiceClient):
             if not metadata_content:
                 # data resource metadata not found or not in proper format
                 ServiceClient.print_error("Provided metadata seems to be invalid.")
-                return
+                return None
         else:
             # identifier available, content creation envisioned -> check content argument
             if payload and not check_file_exists(payload):
                 # content argument provided, but file not found
                 ServiceClient.print_error("Content path seems to be invalid.")
-                return
+                return None
 
         # start with creating data resource
         headers = {"Content-Type": "application/json"}
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         if not identifier:
             # create resource if no identifier is provided
-            resource_response = self.do_post(self.server_url, "api/v1/dataresources/", headers, metadata_content)
+            resource_response = self.do_post(
+                self.server_url, "api/v1/dataresources/", headers, metadata_content
+            )
             resource_response_json = json.loads(resource_response)
         else:
             # Create new content
             resource_id = identifier
             # upload content
-            headers['Content-Type'] = None
+            headers["Content-Type"] = None
             content_path = "api/v1/dataresources/" + resource_id + "/data/"
             if path:
-                content_path += path.lstrip('/')
+                content_path += path.lstrip("/")
             else:
                 path = ""
             if path.endswith("/"):
@@ -82,41 +91,43 @@ class BaseRepoClient(ServiceClient):
                 if payload:
                     content_path += ntpath.basename(payload)
                 else:
-                    self.print_error("If no content is provided, relative path must not end with slash.")
-                    return
+                    self.print_error(
+                        "If no content is provided, relative path must not end with slash."
+                    )
+                    return None
 
             files = None
             if metadata and payload:
                 # content information and file provided
-                files = {
-                    "metadata": open(metadata, 'rb'),
-                    "file": open(payload, 'rb')
-                }
+                files = {"metadata": open(metadata, "rb"), "file": open(payload, "rb")}
             elif not metadata and payload:
                 # only file provided
-                files = {
-                    "file": open(payload, 'rb')
-                }
+                files = {"file": open(payload, "rb")}
             elif metadata and not payload:
                 # only content information provided (file references inside)
-                files = {
-                    "metadata": open(metadata, 'rb')
-                }
+                files = {"metadata": open(metadata, "rb")}
 
             # do create new content
             self.do_post(self.server_url, content_path, headers, files)
             # as post does not return the result, we do an additional GET now to obtain the content information
-            headers['Accept'] = "application/vnd.datamanager.content-information+json"
-            resource_response = self.do_get(self.server_url, content_path, headers);
+            headers["Accept"] = "application/vnd.datamanager.content-information+json"
+            resource_response = self.do_get(self.server_url, content_path, headers)
             resource_response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(resource_response_json) == dict:
+        if isinstance(resource_response_json, dict):
             resource_response_json = [resource_response_json]
 
         return resource_response_json
 
-    def update(self, identifier: str, metadata: Optional[str], auth: bool = False):
+    def update(
+        self,
+        identifier: str,
+        metadata: Optional[str],
+        content: Optional[str],
+        path: Optional[str],
+        auth: bool = False,
+    ):
         """
         Update a data resource replacing its metadata by the provided metadata in the file provided by the metadata
         argument. The content of metadata must have been obtained from the server before as only in that case
@@ -125,6 +136,8 @@ class BaseRepoClient(ServiceClient):
 
         :param identifier: The identifier of the data resource.
         :param metadata: The new data resource metadata document.
+        :param content: Content to update (ignored).
+        :param path: Path of updated resource (ignored).
         :param auth: True|False Either perform or skip authorization.
         :return: A single data resource element in a list.
         """
@@ -134,30 +147,38 @@ class BaseRepoClient(ServiceClient):
         if not metadata_content:
             # data resource metadata not found or not in proper format
             ServiceClient.print_error("Provided metadata seems to be invalid.")
-            return
+            return None
 
         headers = {"Content-Type": "application/json"}
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         # obtain etag from resource
-        etag = self.do_get_etag(self.server_url, "api/v1/dataresources/" + identifier, headers)
-        headers['If-Match'] = etag
+        etag = self.do_get_etag(
+            self.server_url, "api/v1/dataresources/" + identifier, headers
+        )
+        headers["If-Match"] = etag
         # do put with metadata_content
-        resource_response = self.do_put(self.server_url, "api/v1/dataresources/" + identifier, headers,
-                                        metadata_content)
+        resource_response = self.do_put(
+            self.server_url,
+            "api/v1/dataresources/" + identifier,
+            headers,
+            metadata_content,
+        )
 
         resource_response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(resource_response_json) == dict:
+        if isinstance(resource_response_json, dict):
             resource_response_json = [resource_response_json]
 
         return resource_response_json
 
-    def patch(self, identifier: str, payload: str, path: Optional[str], auth: bool = False):
+    def patch(
+        self, identifier: str, payload: str, path: Optional[str], auth: bool = False
+    ):
         """
         Path data resource or content information element. Compared to a full update, a patch operation only
         changes parts of the resource. Patching instructions must be provided in the standardized format specified in
@@ -175,7 +196,7 @@ class BaseRepoClient(ServiceClient):
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         if not path:
             # no path, patch data resource
@@ -184,7 +205,7 @@ class BaseRepoClient(ServiceClient):
             headers["Accept"] = "application/json"
             etag = self.do_get_etag(self.server_url, resource_path, headers)
 
-            headers['If-Match'] = etag
+            headers["If-Match"] = etag
             # do patch with metadata_patch
             if self.do_patch(self.server_url, resource_path, headers, metadata_patch):
                 # obtain patched resource
@@ -193,10 +214,12 @@ class BaseRepoClient(ServiceClient):
         else:
             # with path, patch content information
             # obtain etag for content information
-            resource_path = "api/v1/dataresources/" + identifier + "/data/" + path.lstrip("/");
+            resource_path = (
+                "api/v1/dataresources/" + identifier + "/data/" + path.lstrip("/")
+            )
             headers["Accept"] = "application/vnd.datamanager.content-information+json"
             etag = self.do_get_etag(self.server_url, resource_path, headers)
-            headers['If-Match'] = etag
+            headers["If-Match"] = etag
             # do patch with metadata_patch
             if self.do_patch(self.server_url, resource_path, headers, metadata_patch):
                 # obtain patched resource
@@ -204,11 +227,17 @@ class BaseRepoClient(ServiceClient):
                 response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(response_json) == dict:
+        if isinstance(response_json, dict):
             response_json = [response_json]
         return response_json
 
-    def get(self, resource_id: Optional[str], path: Optional[str], query_params: Optional[dict], auth: bool = False) -> list:
+    def get(
+        self,
+        resource_id: Optional[str],
+        path: Optional[str],
+        query_params: Optional[dict],
+        auth: bool = False,
+    ) -> list:
         """
         Get data resource or content information elements. Depending on the parameters, either a single element
         is obtained or an (optionally) filtered list will be returned. See the argument descriptions for more details.
@@ -230,25 +259,29 @@ class BaseRepoClient(ServiceClient):
             resource_path += resource_id
             if path:
                 # append data sub-path and set proper content type
-                headers['Accept'] = 'application/vnd.datamanager.content-information+json'
+                headers[
+                    "Accept"
+                ] = "application/vnd.datamanager.content-information+json"
                 resource_path += "/data/" + path.lstrip("/")
 
         resource_path = add_query_parameters(resource_path, query_params)
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         resource_response = self.do_get(self.server_url, resource_path, headers)
         response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(response_json) == dict:
+        if isinstance(response_json, dict):
             response_json = [response_json]
 
         return response_json
 
-    def download(self, resource_id: str, path: str, version: Optional[int], auth: bool = False):
+    def download(
+        self, resource_id: str, path: str, version: Optional[int], auth: bool = False
+    ):
         """
         Download the file referred by a specific content information element, optionally in a specific version.
 
@@ -264,10 +297,12 @@ class BaseRepoClient(ServiceClient):
         headers = {}
         if path.endswith("/"):
             # to download folders, the proper accept header must be provided
-            headers['Accept'] = 'application/zip'
+            headers["Accept"] = "application/zip"
 
         # authentication not required or done, now do the real stuff
-        resource_path = "api/v1/dataresources/" + resource_id + "/data/" + path.lstrip("/")
+        resource_path = (
+            "api/v1/dataresources/" + resource_id + "/data/" + path.lstrip("/")
+        )
 
         if version and not resource_path.endswith("/"):
             # only append version if a single file is downloaded
@@ -275,11 +310,17 @@ class BaseRepoClient(ServiceClient):
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         return self.do_get(self.server_url, resource_path, headers)
 
-    def delete(self, identifier: str, path: Optional[str], soft: bool = True, auth: bool = False):
+    def delete(
+        self,
+        identifier: str,
+        path: Optional[str],
+        soft: bool = True,
+        auth: bool = False,
+    ):
         """
         Delete data resource or content information elements from the server. For content information elements, this
         happens immediately but has to be for each element separately. Data resources are by default revoked at the
@@ -299,14 +340,18 @@ class BaseRepoClient(ServiceClient):
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         if not path:
             # obtain etag for resource
-            etag = self.do_get_etag(self.server_url, "api/v1/dataresources/" + identifier, headers)
-            headers['If-Match'] = etag
+            etag = self.do_get_etag(
+                self.server_url, "api/v1/dataresources/" + identifier, headers
+            )
+            headers["If-Match"] = etag
             # perform delete operation
-            result = self.do_delete(self.server_url, "api/v1/dataresources/" + identifier, headers)
+            result = self.do_delete(
+                self.server_url, "api/v1/dataresources/" + identifier, headers
+            )
             # if delete operation successful and hard delete enter here
             if result and not soft:
                 # repeat recursively but set 'soft' True to stop recursion after one iteration
@@ -314,12 +359,18 @@ class BaseRepoClient(ServiceClient):
         else:
             # obtain etag for content
             headers["Accept"] = "application/vnd.datamanager.content-information+json"
-            etag = self.do_get_etag(self.server_url, "api/v1/dataresources/" + identifier + "/data/" + path.lstrip("/"),
-                                    headers)
-            headers['If-Match'] = etag
+            etag = self.do_get_etag(
+                self.server_url,
+                "api/v1/dataresources/" + identifier + "/data/" + path.lstrip("/"),
+                headers,
+            )
+            headers["If-Match"] = etag
             # perform delete operation
-            result = self.do_delete(self.server_url, "api/v1/dataresources/" + identifier + "/data/" + path.lstrip("/"),
-                                    headers)
+            result = self.do_delete(
+                self.server_url,
+                "api/v1/dataresources/" + identifier + "/data/" + path.lstrip("/"),
+                headers,
+            )
 
         return result
 
@@ -343,7 +394,7 @@ class BaseRepoClient(ServiceClient):
             return content
 
     def table_items_for_element(self, elem):
-        if 'parentResource' not in elem:
+        if "parentResource" not in elem:
             return self.tableItemsResource
         else:
             return self.tableItemsContent

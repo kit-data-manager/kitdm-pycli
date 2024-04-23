@@ -9,37 +9,37 @@ are supposed to be used to ease local administration, for testing, and automated
 * [Optional] MetaStore installation
 * [Optional] Typed PID Maker installation
 * [Optional] Keycloak installation
- 
+
 ## Installation and setup
 
 After cloning the repository, start with installing the dependencies by calling
 
-```bash 
+```bash
 pip install poetry
 poetry install
 ```
 
 Optionally, especially when you are modifying code, you may call available tests via:
 
-```bash 
+```bash
 poetry poe test
 ```
 
-Afterwards, the configuration file `properties.example.json` must be modified to fit your local setup and moved to 
-`properties.json` in the current folder. The configuration options in the file are grouped by service and should be 
+Afterwards, the configuration file `properties.example.json` must be modified to fit your local setup and moved to
+`properties.json` in the current folder. The configuration options in the file are grouped by service and should be
 self-explaining. If you are unsure, contact your local infrastructure administrator to obtain missing information.
 
-If you want to use multiple properties files for different setups, you may point to the appropriate file via its 
-absolute path set as the environment variable `PYCLI_PROPERTIES`. If not set, `properties.json` is expected to be 
-located in the current folder. 
+If you want to use multiple properties files for different setups, you may point to the appropriate file via its
+absolute path set as the environment variable `PYCLI_PROPERTIES`. If not set, `properties.json` is expected to be
+located in the current folder.
 
-If all properties are correctly set, one of the available clients can be used. For details, please refer to the 
+If all properties are correctly set, one of the available clients can be used. For details, please refer to the
 following chapters.
 
 ## base-repo-client
 
-*base-repo-client.py* allows to perform many operations on a configured base-repo instance to create, read, update, 
-and delete resources and their file contents. Basic usage information is printed below, but can also be obtained via 
+*base-repo-client.py* allows to perform many operations on a configured base-repo instance to create, read, update,
+and delete resources and their file contents. Basic usage information is printed below, but can also be obtained via
 
 ```commandline
 poetry run base-repo-client --help

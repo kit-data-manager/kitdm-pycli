@@ -3,14 +3,14 @@ from typing import Optional
 from kitdm_pycli.helpers.service_helper import ServiceClient
 from kitdm_pycli.helpers.render_utils import render_as_table, render_as_list
 from kitdm_pycli.helpers.file_utils import check_json_file
-from kitdm_pycli.helpers.url_utils import get_query_param_entry, add_query_parameters
+from kitdm_pycli.helpers.url_utils import add_query_parameters
 
 
 def id_for_element(elem):
-    if 'label' not in elem:
-        return elem['id']
+    if "label" not in elem:
+        return elem["id"]
     else:
-        return elem['schemaId']
+        return elem["schemaId"]
 
 
 class MetaStoreClient(ServiceClient):
@@ -20,15 +20,23 @@ class MetaStoreClient(ServiceClient):
 
     def __init__(self, debug=False):
         ServiceClient.__init__(self, debug)
-        self.server_url = self.properties['metastore']['server_url']
-        self.tableItemsSchema = self.properties['metastore']['tableItemsSchema']
-        self.tableItemsDocument = self.properties['metastore']['tableItemsDocument']
+        self.server_url = self.properties["metastore"]["server_url"]
+        self.tableItemsSchema = self.properties["metastore"]["tableItemsSchema"]
+        self.tableItemsDocument = self.properties["metastore"]["tableItemsDocument"]
 
-    def create(self, metadata: str, payload: Optional[str], path: Optional[str], auth: bool = False):
+    def create(
+        self,
+        identifier: str,
+        metadata: str,
+        payload: Optional[str],
+        path: Optional[str],
+        auth: bool = False,
+    ):
         """
         Create operation for schemas and documents. Depending on the arguments, either a
         schema or document is created. What is created is determined by the content of metadata.
 
+        :param identifier: The resource identifier (ignored).
         :param metadata: The metadata for the created element, i.e., schema or metadata record.
         :param payload: The payload, i.e., a local file path, which either contains a metadata schema or document.
         :param path: The path identifier that allows to switch between accessing schemas and documents, i.e., 'schema'
@@ -42,40 +50,62 @@ class MetaStoreClient(ServiceClient):
             # read metadata for validation
             check_json_file(metadata, ["type", "schemaId"])
             files = [
-                ('schema', ('schema.json', open(payload, 'rb'), 'application/json')),
-                ('record', ('schema_record.json', open(metadata, 'rb'), 'application/json'))
+                ("schema", ("schema.json", open(payload, "rb"), "application/json")),
+                (
+                    "record",
+                    ("schema_record.json", open(metadata, "rb"), "application/json"),
+                ),
             ]
         elif path == "document":
             endpoint = "metadata"
             # read metadata for validation
             check_json_file(metadata, ["relatedResource", "schema"])
             files = [
-                ('document', ('document.json', open(payload, 'rb'), 'application/json')),
-                ('record', ('metadata_record.json', open(metadata, 'rb'), 'application/json'))
+                (
+                    "document",
+                    ("document.json", open(payload, "rb"), "application/json"),
+                ),
+                (
+                    "record",
+                    ("metadata_record.json", open(metadata, "rb"), "application/json"),
+                ),
             ]
         else:
             # bad path
-            self.print_error("Bad resource type " + path + " provided. Only 'schema' or 'document' are supported.")
+            self.print_error(
+                "Bad resource type "
+                + path
+                + " provided. Only 'schema' or 'document' are supported."
+            )
             return
 
         # start with creating data resource
-        headers = {}
+        headers: dict[str, str] = {}
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
             return
 
         # create schema or document
-        resource_response = self.do_post(self.server_url, "api/v1/" + endpoint, headers, files)
+        resource_response = self.do_post(
+            self.server_url, "api/v1/" + endpoint, headers, files
+        )
         resource_response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(resource_response_json) == dict:
+        if isinstance(resource_response_json, dict):
             resource_response_json = [resource_response_json]
 
         return resource_response_json
 
-    def update(self, identifier: str, metadata: str, payload: Optional[str], path: Optional[str], auth: bool = False):
+    def update(
+        self,
+        identifier: str,
+        metadata: str,
+        payload: Optional[str],
+        path: Optional[str],
+        auth: bool = False,
+    ):
         """
         Update a metadata schema or document. The content of metadata must have been obtained from the server before
         as only in that case it will contain all references to existing elements. Providing a metadata document only
@@ -91,34 +121,63 @@ class MetaStoreClient(ServiceClient):
         :return: A single schema/document metadata element in a list.
         """
 
-        headers = {}
+        headers: dict[str, str] = {}
         if path == "schema":
             endpoint = "schemas"
-            headers['Accept'] = "application/vnd.datamanager.schema-record+json";
+            headers["Accept"] = "application/vnd.datamanager.schema-record+json"
             files = []
             # add record metadata if provided
             if metadata:
                 # read metadata for validation
                 check_json_file(metadata, ["type", "schemaId"])
-                files.append(('record', ('schema_record.json', open(metadata, 'rb'), 'application/json')))
+                files.append(
+                    (
+                        "record",
+                        (
+                            "schema_record.json",
+                            open(metadata, "rb"),
+                            "application/json",
+                        ),
+                    )
+                )
             # add schema document if provided
             if payload:
-                files.append(('schema', ('schema.json', open(payload, 'rb'), 'application/json')))
+                files.append(
+                    ("schema", ("schema.json", open(payload, "rb"), "application/json"))
+                )
         elif path == "document":
             endpoint = "metadata"
-            headers['Accept'] = "application/vnd.datamanager.metadata-record+json";
+            headers["Accept"] = "application/vnd.datamanager.metadata-record+json"
             files = []
             # add record metadata if provided
             if metadata:
                 # read metadata for validation
                 check_json_file(metadata, ["relatedResource", "schema"])
-                files.append(('record', ('metadata_record.json', open(metadata, 'rb'), 'application/json')))
+                files.append(
+                    (
+                        "record",
+                        (
+                            "metadata_record.json",
+                            open(metadata, "rb"),
+                            "application/json",
+                        ),
+                    )
+                )
             # add metadata document if provided
             if payload:
-                files.append(('document', ('document.json', open(payload, 'rb'), 'application/json')))
+                files.append(
+                    (
+                        "document",
+                        ("document.json", open(payload, "rb"), "application/json"),
+                    )
+                )
         else:
             # bad path
-            self.print_error("Bad resource type " + path + " provided. Only 'schema' or 'document' are supported.")
+            self.print_error(
+                "Bad resource type "
+                + path
+                + " provided. Only 'schema' or 'document' are supported."
+            )
             return
 
         # authenticate if required, stop if login fails
@@ -126,22 +185,31 @@ class MetaStoreClient(ServiceClient):
             return
 
         # obtain etag and add to header
-        etag = self.do_get_etag(self.server_url, "api/v1/" + endpoint + "/" + identifier, headers)
-        headers['If-Match'] = etag
+        etag = self.do_get_etag(
+            self.server_url, "api/v1/" + endpoint + "/" + identifier, headers
+        )
+        headers["If-Match"] = etag
         # Remove accept header for PUT operation
-        headers['Accept'] = None
+        headers["Accept"] = None
         # create schema or document
-        resource_response = self.do_put(self.server_url, "api/v1/" + endpoint + "/" + identifier, headers, files)
+        resource_response = self.do_put(
+            self.server_url, "api/v1/" + endpoint + "/" + identifier, headers, files
+        )
         resource_response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(resource_response_json) == dict:
+        if isinstance(resource_response_json, dict):
             resource_response_json = [resource_response_json]
 
         return resource_response_json
 
-    def get(self, resource_id: Optional[str], path: Optional[str], query_params: Optional[dict], auth: bool = False) -> list:
-
+    def get(
+        self,
+        resource_id: Optional[str],
+        path: Optional[str],
+        query_params: Optional[dict],
+        auth: bool = False,
+    ) -> list:
         """
         Get schema or document metadata. Depending on the parameters, either a single element
         is obtained or an (optionally) filtered list will be returned. See the argument descriptions for more details.
@@ -154,17 +222,21 @@ class MetaStoreClient(ServiceClient):
         :param auth: True|False Either perform or skip authorization.
         :return: Data resource or content information elements in a list.
         """
-        headers = {}
+        headers: dict[str, str] = {}
         if path == "schema":
             endpoint = "schemas"
-            headers['Accept'] = 'application/vnd.datamanager.schema-record+json'
+            headers["Accept"] = "application/vnd.datamanager.schema-record+json"
         elif path == "document":
             endpoint = "metadata"
-            headers['Accept'] = 'application/vnd.datamanager.metadata-record+json'
+            headers["Accept"] = "application/vnd.datamanager.metadata-record+json"
         else:
             # bad path
-            self.print_error("Bad resource type " + path + " provided. Only 'schema' or 'document' are supported.")
-            return
+            self.print_error(
+                "Bad resource type "
+                + path
+                + " provided. Only 'schema' or 'document' are supported."
+            )
+            return None
 
         resource_path = "api/v1/" + endpoint
 
@@ -175,18 +247,24 @@ class MetaStoreClient(ServiceClient):
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         resource_response = self.do_get(self.server_url, resource_path, headers)
         response_json = json.loads(resource_response)
 
         # ensure a list to be returned
-        if type(response_json) == dict:
+        if isinstance(response_json, dict):
             response_json = [response_json]
 
         return response_json
 
-    def delete(self, identifier: str, path: Optional[str], soft: bool = True, auth: bool = False):
+    def delete(
+        self,
+        identifier: str,
+        path: Optional[str],
+        soft: bool = True,
+        auth: bool = False,
+    ):
         """
         Delete a schema or document from the server. By default, both are revoked at the
         first call (which can be reverted) and will be removed if one deletes a revoked schema or document.
@@ -210,25 +288,35 @@ class MetaStoreClient(ServiceClient):
             headers["Accept"] = "application/vnd.datamanager.metadata-record+json"
         else:
             # bad path
-            self.print_error("Bad resource type " + path + " provided. Only 'schema' or 'document' are supported.")
-            return
+            self.print_error(
+                "Bad resource type "
+                + path
+                + " provided. Only 'schema' or 'document' are supported."
+            )
+            return None
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
-        etag = self.do_get_etag(self.server_url, "api/v1/" + endpoint + "/" + identifier, headers)
-        headers['If-Match'] = etag
+        etag = self.do_get_etag(
+            self.server_url, "api/v1/" + endpoint + "/" + identifier, headers
+        )
+        headers["If-Match"] = etag
         # remove accept header for deletion
-        headers['Accept'] = None
-        result = self.do_delete(self.server_url, "api/v1/" + endpoint + "/" + identifier, headers)
+        headers["Accept"] = None
+        result = self.do_delete(
+            self.server_url, "api/v1/" + endpoint + "/" + identifier, headers
+        )
         if result and not soft:
             # repeat recursively but set 'soft' True to stop recursion after one iteration
             result = self.delete(identifier, path, True, auth)
 
         return result
 
-    def download(self, resource_id: str, path: str, version: Optional[int], auth: bool = False):
+    def download(
+        self, resource_id: str, path: str, version: Optional[int], auth: bool = False
+    ):
         """
         Download the schema or document, optionally in a specific version. Which kind of resource is downloaded is
         determined by the path argument, which can be either 'schema' or 'document'.
@@ -241,7 +329,7 @@ class MetaStoreClient(ServiceClient):
         :param auth: True|False Either perform or skip authorization.
         :return: The downloaded bitstream, which can be further processed or stored in a local file.
         """
-        headers = {}
+        headers: dict[str, str] = {}
         resource_path = "api/v1/"
         if path == "schema":
             resource_path += "schemas/" + resource_id
@@ -249,8 +337,12 @@ class MetaStoreClient(ServiceClient):
             resource_path += "metadata/" + resource_id
         else:
             # bad path
-            self.print_error("Bad resource type " + path + " provided. Only 'schema' or 'document' are supported.")
-            return
+            self.print_error(
+                "Bad resource type "
+                + path
+                + " provided. Only 'schema' or 'document' are supported."
+            )
+            return None
 
         if version:
             # only append version if a single file is downloaded
@@ -258,11 +350,17 @@ class MetaStoreClient(ServiceClient):
 
         # authenticate if required, stop if login fails
         if not self.login(auth, headers):
-            return
+            return None
 
         return self.do_get(self.server_url, resource_path, headers)
 
-    def patch(self, resource_id: str, payload: Optional[str], path: Optional[str], auth: bool = False):
+    def patch(
+        self,
+        resource_id: str,
+        payload: Optional[str],
+        path: Optional[str],
+        auth: bool = False,
+    ):
         print("Not supported")
 
     def render_response(self, content, render_as):
@@ -284,7 +382,7 @@ class MetaStoreClient(ServiceClient):
             return content
 
     def table_items_for_element(self, elem):
-        if 'label' not in elem:
+        if "label" not in elem:
             return self.tableItemsDocument
         else:
             return self.tableItemsSchema

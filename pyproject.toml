@@ -112,3 +112,6 @@ version_variable = "src/kitdm-pycli/__init__.py:__version__"
 
 [tool.licensecheck]
 using = "poetry"
+
+[tool.mypy]
+disable_error_code = ["attr-defined"]
