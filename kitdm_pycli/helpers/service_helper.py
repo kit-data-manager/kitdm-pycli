@@ -143,7 +143,10 @@ class ServiceClient(ABC):
                 username = self.properties["keycloak"]["username"]
                 if not username:
                     username = input("Username: ")
-                password = self.properties["keycloak"]["password"]
+                password = None
+                if "password" in self.properties["keycloak"]:
+                    password = self.properties["keycloak"]["password"]
+                
                 if not password:
                     password = getpass.getpass("Password: ")
                 self.print_debug("Performing KeyCloak login.")
