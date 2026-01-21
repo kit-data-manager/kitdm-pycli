@@ -10,6 +10,23 @@ are supposed to be used to ease local administration, for testing, and automated
 * [Optional] Typed PID Maker installation
 * [Optional] Keycloak installation
 
+## Quickstart
+
+If you don't need access to the code you can install 'kitdm-pycli' directly from this repository. Therefore, just call:
+
+```bash
+pip install git+https://github.com/kit-data-manager/kitdm-pycli.git
+```
+Afterwards, you should create a properties file, e.g., pycli-properties.json, based on [properties.example.json](properties.example.json).
+Once finished, you either let an environment variable named `PYCLI_PROPERTIES` point to this file or you directly call 'kitdm-pycli' as follows:
+
+```bash
+PYCLI_PROPERTIES=<path_to_pycli-properties.json> base-repo-client getResources
+```
+
+For details about the contained clients, please refer to the *Main Usage Information* sections at the end of this document.
+
+
 ## Installation and setup
 
 After cloning the repository, start with installing the dependencies by calling
