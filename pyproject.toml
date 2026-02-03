@@ -60,7 +60,7 @@ mkdocs-coverage = "^1.0.0"
 mike = "^2.0.0"
 anybadge = "^1.14.0"
 interrogate = "^1.5.0"
-black = "^23.3.0"
+black = "^24.0.0"
 mkdocs-exclude = "^1.0.2"
 
 [build-system]
